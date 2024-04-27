@@ -9,7 +9,7 @@ public abstract class Entity {
     protected Rectangle2D.Float hitbox;
     public Entity(float x , float y,int width,int height){
         this.x = x;
-        this.y = x;
+        this.y = y;
         this.width = width;
         this.height = height;
     }

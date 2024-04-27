@@ -4,6 +4,8 @@ import main.Game;
 import utils.LoadSave;
 
 import java.awt.*;
+import java.awt.font.GlyphMetrics;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import static utils.Constants.PlayerConstants.*;
@@ -14,12 +16,18 @@ public class Player extends Entity{
 
     private int aniTick,aniIndex,aniSpeed = 15;
     private int playerAction = IDLE;
-    private boolean left,right,up,down;
+    private boolean left,right,up,down,jump;
     private boolean moving = false,attacking = false;
     private float playerSpeed = 2.0f;
     private int[][] lvlData;
     private float xDrawOffset = 21 * Game.SCALE;
     private float yDrawOffset = 4 * Game.SCALE;
+    //jumping and greavity
+    private float airSpeed = 0f;
+    private float gravity = 0.04f * Game.SCALE;
+    private float jumpSpeed = -2.25f * Game.SCALE;
+    private float fallSpeedAfterCollition = 0.5f * Game.SCALE;
+    private boolean inAir = false;
 
 
     public Player(float x, float y,int width,int height) {
@@ -74,32 +82,32 @@ public class Player extends Entity{
 
     private void updatePos() {
         moving = false;
-        if (!left && !right && !up && !down)
+        if (!left && !right && !inAir)
             return;
-        float xSpeed = 0, ySpeed = 0;
+        float xSpeed = 0;
 
-        if (left && !right) {
-            xSpeed = -playerSpeed;
-        } else if (right && !left) {
-            xSpeed = playerSpeed;
-        }
-        if (up && !down) {
-            ySpeed = -playerSpeed;
-        } else if (down && !up) {
-            ySpeed = playerSpeed;
-        }
-//        if (CanMoveHere(x + xSpeed, y + ySpeed, width, height, lvlData)){
-//            this.x += xSpeed;
-//            this.y += ySpeed;
-//            moving = true;
-//        }
-        if (CanMoveHere(hitbox.x + xSpeed, hitbox.y + ySpeed, hitbox.width, hitbox.height, lvlData)){
-            hitbox.x += xSpeed;
-            hitbox.y += ySpeed;
-            moving = true;
+        if (left)
+            xSpeed -= playerSpeed;
+        if (right)
+            xSpeed += playerSpeed;
+
+        if (inAir) {
+            if(CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, lvlData));
+            hitbox.y += airSpeed;
+            airSpeed += gravity;
+            updateXPos(xSpeed);
+        } else {
+            updateXPos(xSpeed);
         }
     }
+    private void updateXPos(float xSpeed) {
 
+        if (CanMoveHere(hitbox.x + xSpeed, hitbox.y, hitbox.width, hitbox.height, lvlData)){
+            hitbox.x += xSpeed;
+        }else {
+            hitbox.x = GetEntityXPosNextToWall(hitbox,xSpeed);
+        }
+    }
 
     private void loadAnimations() {
 
@@ -160,4 +168,9 @@ public class Player extends Entity{
     public void setAttacking(boolean attacking){
         this.attacking = attacking;
     }
+
 }
+
+
+
+
