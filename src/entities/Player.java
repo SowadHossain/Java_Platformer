@@ -18,7 +18,7 @@ public class Player extends Entity{
     private int playerAction = IDLE;
     private boolean left,right,up,down,jump;
     private boolean moving = false,attacking = false;
-    private float playerSpeed = 2.0f;
+    private float playerSpeed = 1.0f;
     private int[][] lvlData;
     private float xDrawOffset = 21 * Game.SCALE;
     private float yDrawOffset = 4 * Game.SCALE;
