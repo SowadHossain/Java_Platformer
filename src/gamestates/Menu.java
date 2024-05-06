@@ -1,26 +1,39 @@
 package gamestates;
 
 import main.Game;
+import ui.MenuButtons;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class Menu extends State implements Statemethods {
+    private MenuButtons[] buttons = new MenuButtons[3];
     public Menu(Game game) {
+
         super(game);
+        loadButtons();
+    }
+
+    private void loadButtons() {
+        buttons[0] = new MenuButtons(Game.GAME_HEIGHT/2,(int)(150 * Game.SCALE), 0 ,Gamestate.PLAYING);
+        buttons[1] = new MenuButtons(Game.GAME_HEIGHT/2,(int)(220 * Game.SCALE), 1 ,Gamestate.OPTIONS);
+        buttons[2] = new MenuButtons(Game.GAME_HEIGHT/2,(int)(290 * Game.SCALE), 2 ,Gamestate.QUIT);
     }
 
     @Override
     public void update() {
+        for (MenuButtons mb: buttons){
+            mb.update();
+        }
 
     }
 
     @Override
     public void draw(Graphics g) {
-        g.setColor(Color.BLACK);
-        g.drawString("MENU",Game.GAME_WIDTH/2, Game.GAME_HEIGHT/3);
-
+        for (MenuButtons mb: buttons){
+            mb.draw(g);
+        }
     }
 
     @Override
@@ -30,16 +43,43 @@ public class Menu extends State implements Statemethods {
 
     @Override
     public void mousePressed(MouseEvent e) {
-
+        for (MenuButtons mb: buttons){
+            if(isIn(e,mb)){
+                mb.setMousePressed(true);
+                break;
+            }
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        for (MenuButtons mb: buttons){
+            if(isIn(e,mb)) {
+                if (mb.isMousePressed())
+                    mb.applyGamestate();
+                break;
+            }
+        }
+        resetButtons();
+    }
 
+    private void resetButtons() {
+        for (MenuButtons mb : buttons){
+            mb.restBools();
+        }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        for (MenuButtons mb : buttons){
+            mb.setMouseOver(false);
+        }
+        for (MenuButtons mb : buttons){
+            if(isIn(e,mb)){
+                mb.setMouseOver(true);
+                break;
+            }
+        }
 
     }
 
